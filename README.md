@@ -6,7 +6,7 @@
 
 ---
 
-## 👥 Equipo
+## Equipo
 
 | Nombre | Rol | Universidad |
 |--------|-----|-------------|
