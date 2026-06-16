@@ -1,4 +1,4 @@
-# ⚡ EcoWatt 2026
+#  EcoWatt 2026
 
 > **Sistema inteligente de monitoreo y gestión del consumo eléctrico residencial**  
 > Hackathon EcoWatt 2026 — Universidad Nacional de Ingeniería (UNI)  
@@ -17,18 +17,18 @@
 
 ---
 
-## 🎯 ¿Qué es EcoWatt?
+## ¿Qué es EcoWatt?
 
 EcoWatt es una solución integral para el monitoreo y gestión del consumo eléctrico en viviendas residenciales. Combina hardware de bajo costo con algoritmos de inteligencia artificial para:
 
-- 📊 **Medir** en tiempo real: voltaje, corriente, potencia activa/reactiva, factor de potencia y kWh
-- 🔍 **Identificar** automáticamente qué artefacto está conectado mediante **NILM** (Non-Intrusive Load Monitoring)
-- 📈 **Predecir** el gasto eléctrico mensual en soles
-- 🤖 **Recomendar** acciones para reducir el consumo vía IA conversacional
+- **Medir** en tiempo real: voltaje, corriente, potencia activa/reactiva, factor de potencia y kWh
+- **Identificar** automáticamente qué artefacto está conectado mediante **NILM** (Non-Intrusive Load Monitoring)
+- **Predecir** el gasto eléctrico mensual en soles
+- **Recomendar** acciones para reducir el consumo vía IA conversacional
 
 ---
 
-## 🏗️ Arquitectura del sistema
+## Arquitectura del sistema
 
 ```
 [Arduino UNO + CT 5A + ZMPT101B]
@@ -53,7 +53,7 @@ EcoWatt es una solución integral para el monitoreo y gestión del consumo eléc
 
 ---
 
-## 🛠️ Stack tecnológico
+## Stack tecnológico
 
 ### Hardware
 ![Arduino](https://img.shields.io/badge/Arduino-00979D?style=flat&logo=arduino&logoColor=white)
@@ -86,7 +86,7 @@ EcoWatt es una solución integral para el monitoreo y gestión del consumo eléc
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 ecowatt-2026/
@@ -116,7 +116,7 @@ ecowatt-2026/
 
 ---
 
-## 🚀 Instalación y setup
+## Instalación y setup
 
 ### Requisitos previos
 - Python 3.10+
@@ -172,7 +172,7 @@ DEBUG=True
 
 ---
 
-## 📅 Cronograma de desarrollo
+## Cronograma de desarrollo
 
 | Fecha | Actividad |
 |-------|-----------|
@@ -183,7 +183,7 @@ DEBUG=True
 
 ---
 
-## 📊 Criterios de evaluación
+## Criterios de evaluación
 
 | Criterio | Puntaje |
 |----------|---------|
@@ -195,7 +195,7 @@ DEBUG=True
 
 ---
 
-## 📚 Referencias científicas
+## Referencias científicas
 
 - Chatterjee, A., & Heer, P. (2025). *Non-Intrusive Load Monitoring (NILM) with very low-frequency data from smart meters in Switzerland*. Energy & Buildings, 344, 116002. https://doi.org/10.1016/j.enbuild.2025.116002
 - Kelly, J., & Knottenbelt, W. (2015). *Neural NILM: Deep neural networks applied to energy disaggregation*. ACM BuildSys 2015.
@@ -203,13 +203,13 @@ DEBUG=True
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 MIT License — Frank Kevin Jauregui Bendezu · Jesus Morales · John Karita · Oscar Marcelo · 2026
 
 ---
 
 <div align="center">
-  <strong>⚡ EcoWatt 2026 — Eficiencia Energética Inteligente para el Hogar</strong><br>
+  <strong> EcoWatt 2026 — Eficiencia Energética Inteligente para el Hogar</strong><br>
   Hackathon EcoWatt · Universidad Nacional de Ingeniería · Junio 2026
 </div>
