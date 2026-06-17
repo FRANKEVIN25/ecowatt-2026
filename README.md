@@ -12,7 +12,7 @@
 |--------|-----|-------------|
 | Frank Kevin Jauregui Bendezu | Software Lead / Backend | UPCH |
 | Jesus Anselmo Morales Alvarado | Backend / ML Engineer | UPCH |
-| John Kenneth Karita | Hardware Lead / Electrónica | UPCH |
+| John Kenneth Karita | Firmware / Electrónica | UPCH |
 | Oscar Angello Marcelo Romero Pizarro | Hardware / Electrónica | UNI |
 
 ---
