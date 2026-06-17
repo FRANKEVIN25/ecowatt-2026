@@ -32,6 +32,8 @@ dist/
 .svelte-kit/
 .vite/
 *.tsbuildinfo
+ml/data/training_data.csv
+ml/models/sgn_refit_house8_v1.*
 
 # PyInstaller
 #   Usually these files are written by a python script from a template

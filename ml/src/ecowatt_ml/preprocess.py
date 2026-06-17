@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 from .config import FEATURE_COLUMNS, LABEL_COLUMN, WindowConfig
@@ -43,17 +44,17 @@ def split_train_validation(
     x_values: np.ndarray,
     y_values: np.ndarray,
     validation_ratio: float = 0.2,
+    random_state: int = 42,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     if not 0 < validation_ratio < 1:
         raise ValueError("validation_ratio must be between 0 and 1.")
 
-    split_at = max(1, int(len(x_values) * (1 - validation_ratio)))
-    if split_at >= len(x_values):
-        split_at = len(x_values) - 1
-
-    return (
-        x_values[:split_at],
-        x_values[split_at:],
-        y_values[:split_at],
-        y_values[split_at:],
+    unique, counts = np.unique(y_values, return_counts=True)
+    stratify = y_values if len(unique) > 1 and counts.min() > 1 else None
+    return train_test_split(
+        x_values,
+        y_values,
+        test_size=validation_ratio,
+        random_state=random_state,
+        stratify=stratify,
     )
