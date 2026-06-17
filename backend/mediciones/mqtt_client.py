@@ -25,8 +25,9 @@ def on_message(client, userdata, msg):
 
 
 def guardar_medicion(payload):
-    import django
     from mediciones.models import Medicion
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
 
     try:
         medicion = Medicion.objects.create(
@@ -41,6 +42,29 @@ def guardar_medicion(payload):
             kwh_acumulado=payload.get('kWh', 0.0),
         )
         print(f"[MQTT] Medición guardada: {medicion.id}")
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "mediciones",
+            {
+                "type": "medicion_update",
+                "data": {
+                    "id": str(medicion.id),
+                    "timestamp": medicion.timestamp.isoformat(),
+                    "cuarto": medicion.cuarto,
+                    "V": medicion.voltaje_rms,
+                    "I": medicion.corriente_rms,
+                    "phi": medicion.angulo_fase,
+                    "P": medicion.potencia_activa,
+                    "Q": medicion.potencia_reactiva,
+                    "S": medicion.potencia_aparente,
+                    "fp": medicion.factor_potencia,
+                    "kWh": medicion.kwh_acumulado,
+                }
+            }
+        )
+        print(f"[WS] Medición enviada por WebSocket")
+
     except Exception as e:
         print(f"[MQTT] Error al guardar en BD: {e}")
 
