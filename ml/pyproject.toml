@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ecowatt-ml"
+version = "0.1.0"
+description = "EcoWatt NILM and cost prediction pipeline"
+requires-python = ">=3.10"
+dependencies = [
+    "joblib==1.4.2",
+    "numpy==1.26.4",
+    "pandas==2.2.2",
+    "scikit-learn==1.5.1",
+    "torch==2.3.1",
+    "tqdm==4.66.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
