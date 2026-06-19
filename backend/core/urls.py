@@ -7,6 +7,7 @@ from mediciones.views import (
     PrediccionGastoViewSet,
     SesionDemoViewSet
 )
+from nilm.views import NilmLatestView, CostPredictionView
 
 router = DefaultRouter()
 router.register(r'mediciones', MedicionViewSet)
@@ -17,4 +18,6 @@ router.register(r'sesiones', SesionDemoViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/nilm/latest/', NilmLatestView.as_view(), name='nilm-latest'),
+    path('api/cost/prediction/', CostPredictionView.as_view(), name='cost-prediction'),
 ]
