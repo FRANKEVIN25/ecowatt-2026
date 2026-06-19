@@ -18,9 +18,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { latestDetection, monthlyPrediction, powerHistory } from "./mock-data";
-
-const confidencePercent = Math.round(latestDetection.confidence * 100);
+import { useLiveData } from "./useLiveData";
 
 function StatCard({
   label,
@@ -43,6 +41,12 @@ function StatCard({
 }
 
 export default function App() {
+  const { connected, latestDetection, monthlyPrediction, powerHistory } =
+    useLiveData();
+
+  const confidencePercent = Math.round(latestDetection.confidence * 100);
+  const hasHistory = powerHistory.length > 0;
+
   return (
     <main className="min-h-screen bg-panel text-ink">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
@@ -53,9 +57,18 @@ export default function App() {
             </p>
             <h1 className="mt-1 text-3xl font-bold">Dashboard residencial</h1>
           </div>
-          <div className="flex items-center gap-2 rounded-lg border border-grid bg-white px-3 py-2 text-sm font-medium shadow-sm">
-            <Activity className="h-4 w-4 text-energy" aria-hidden="true" />
-            Mock API activo
+          <div
+            className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium shadow-sm ${
+              connected
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                : "border-grid bg-white text-slate-600"
+            }`}
+          >
+            <Activity
+              className={`h-4 w-4 ${connected ? "text-emerald-600" : "text-energy"}`}
+              aria-hidden="true"
+            />
+            {connected ? "Datos en vivo (WebSocket)" : "Conectando al backend..."}
           </div>
         </header>
 
@@ -84,8 +97,8 @@ export default function App() {
                 <p className="text-sm font-medium text-slate-600">
                   Artefacto detectado
                 </p>
-                <h2 className="mt-2 text-3xl font-bold">
-                  {latestDetection.appliance}
+                <h2 className="mt-2 text-3xl font-bold capitalize">
+                  {latestDetection.appliance.replace(/_/g, " ")}
                 </h2>
               </div>
               <PlugZap className="h-8 w-8 text-energy" aria-hidden="true" />
@@ -98,7 +111,7 @@ export default function App() {
               </div>
               <div className="h-3 overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full rounded-full bg-energy"
+                  className="h-full rounded-full bg-energy transition-all duration-500"
                   style={{ width: `${confidencePercent}%` }}
                 />
               </div>
@@ -106,7 +119,7 @@ export default function App() {
 
             <div className="mt-6 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-3 text-sm font-medium text-emerald-800">
               <BadgeCheck className="h-4 w-4" aria-hidden="true" />
-              Listo para reemplazar mock por `/api/nilm/latest/`
+              Conectado a /api/nilm/latest/ — modelo SGN en vivo
             </div>
           </article>
 
@@ -121,27 +134,33 @@ export default function App() {
               <History className="h-5 w-5 text-energy" aria-hidden="true" />
             </div>
             <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={powerHistory} margin={{ left: 0, right: 10 }}>
-                  <defs>
-                    <linearGradient id="power" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="5%" stopColor="#0f9f6e" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="#0f9f6e" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="#d9e2dc" strokeDasharray="3 3" />
-                  <XAxis dataKey="time" tickLine={false} />
-                  <YAxis tickLine={false} width={48} />
-                  <Tooltip />
-                  <Area
-                    dataKey="activePowerW"
-                    name="W"
-                    stroke="#0f9f6e"
-                    fill="url(#power)"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              {hasHistory ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={powerHistory} margin={{ left: 0, right: 10 }}>
+                    <defs>
+                      <linearGradient id="power" x1="0" x2="0" y1="0" y2="1">
+                        <stop offset="5%" stopColor="#0f9f6e" stopOpacity={0.35} />
+                        <stop offset="95%" stopColor="#0f9f6e" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid stroke="#d9e2dc" strokeDasharray="3 3" />
+                    <XAxis dataKey="time" tickLine={false} />
+                    <YAxis tickLine={false} width={48} />
+                    <Tooltip />
+                    <Area
+                      dataKey="activePowerW"
+                      name="W"
+                      stroke="#0f9f6e"
+                      fill="url(#power)"
+                      strokeWidth={2}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                  Esperando mediciones del sensor...
+                </div>
+              )}
             </div>
           </article>
         </section>
@@ -151,24 +170,30 @@ export default function App() {
             <p className="text-sm font-medium text-slate-600">
               Prediccion de gasto
             </p>
-            <h2 className="text-xl font-semibold">Costo acumulado simulado</h2>
+            <h2 className="text-xl font-semibold">Costo acumulado</h2>
           </div>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={powerHistory} margin={{ left: 0, right: 10 }}>
-                <CartesianGrid stroke="#d9e2dc" strokeDasharray="3 3" />
-                <XAxis dataKey="time" tickLine={false} />
-                <YAxis tickLine={false} width={48} />
-                <Tooltip />
-                <Line
-                  dataKey="costSoles"
-                  name="S/"
-                  stroke="#e6a700"
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {hasHistory ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={powerHistory} margin={{ left: 0, right: 10 }}>
+                  <CartesianGrid stroke="#d9e2dc" strokeDasharray="3 3" />
+                  <XAxis dataKey="time" tickLine={false} />
+                  <YAxis tickLine={false} width={48} />
+                  <Tooltip />
+                  <Line
+                    dataKey="costSoles"
+                    name="S/"
+                    stroke="#e6a700"
+                    strokeWidth={3}
+                    dot={{ r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                Esperando mediciones del sensor...
+              </div>
+            )}
           </div>
         </section>
       </div>
