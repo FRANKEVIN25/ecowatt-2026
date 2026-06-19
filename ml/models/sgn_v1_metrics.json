@@ -1,0 +1,12 @@
+{
+  "model": "sgn_v1",
+  "training_data": "ml/data/training_data.csv",
+  "data_type": "synthetic",
+  "samples": 50000,
+  "epochs": 50,
+  "window_size": 60,
+  "accuracy": 1.0,
+  "macro_f1": 1.0,
+  "rnf_02_passed": true,
+  "notes": "Baseline SGN trained with synthetic realistic EcoWatt measurements while REFIT labels are mapped and balanced."
+}
