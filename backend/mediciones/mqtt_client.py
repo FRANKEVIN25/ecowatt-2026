@@ -1,4 +1,5 @@
 import json
+import math
 import threading
 import paho.mqtt.client as mqtt
 from django.conf import settings
@@ -30,14 +31,20 @@ def guardar_medicion(payload):
     from asgiref.sync import async_to_sync
 
     try:
+        v = payload.get('V', 0.0)
+        i = payload.get('I', 0.0)
+        p = payload.get('P', 0.0)
+        s = v * i
+        q = math.sqrt(abs(s ** 2 - p ** 2))
+
         medicion = Medicion.objects.create(
             cuarto=payload.get('cuarto', 'principal'),
-            voltaje_rms=payload.get('V', 0.0),
-            corriente_rms=payload.get('I', 0.0),
+            voltaje_rms=v,
+            corriente_rms=i,
             angulo_fase=payload.get('phi', 0.0),
-            potencia_activa=payload.get('P', 0.0),
-            potencia_reactiva=payload.get('Q', 0.0),
-            potencia_aparente=payload.get('S', 0.0),
+            potencia_activa=p,
+            potencia_reactiva=q,
+            potencia_aparente=s,
             factor_potencia=payload.get('fp', 0.0),
             kwh_acumulado=payload.get('kWh', 0.0),
         )

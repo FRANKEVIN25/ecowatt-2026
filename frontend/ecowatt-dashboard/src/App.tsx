@@ -7,6 +7,7 @@ import {
   PlugZap,
   WalletCards,
 } from "lucide-react";
+import ChatPanel from "./ChatPanel";
 import {
   Area,
   AreaChart,
@@ -164,6 +165,8 @@ export default function App() {
             </div>
           </article>
         </section>
+
+        <ChatPanel />
 
         <section className="rounded-lg border border-grid bg-white p-5 shadow-sm">
           <div className="mb-4">
