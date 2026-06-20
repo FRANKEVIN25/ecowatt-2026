@@ -7,7 +7,7 @@ from mediciones.views import (
     PrediccionGastoViewSet,
     SesionDemoViewSet
 )
-from nilm.views import NilmLatestView, CostPredictionView
+from nilm.views import NilmLatestView, CostPredictionView, ChatIAView
 
 router = DefaultRouter()
 router.register(r'mediciones', MedicionViewSet)
@@ -20,4 +20,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/nilm/latest/', NilmLatestView.as_view(), name='nilm-latest'),
     path('api/cost/prediction/', CostPredictionView.as_view(), name='cost-prediction'),
+    path('api/chat/', ChatIAView.as_view(), name='chat-ia'),
 ]

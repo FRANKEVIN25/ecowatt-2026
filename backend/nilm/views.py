@@ -1,5 +1,7 @@
 import sys
 from pathlib import Path
+import google.generativeai as genai
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -112,3 +114,66 @@ class CostPredictionView(APIView):
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+class ChatIAView(APIView):
+    def post(self, request):
+        try:
+            pregunta = request.data.get('pregunta', '').strip()
+            if not pregunta:
+                return Response(
+                    {"error": "Debes enviar una pregunta"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            ultima_medicion = Medicion.objects.first()
+            ultimo_artefacto = ArtefactoDetectado.objects.first()
+            ultima_prediccion = PrediccionGasto.objects.first()
+
+            contexto_partes = []
+
+            if ultima_medicion:
+                contexto_partes.append(
+                    f"Consumo actual: {ultima_medicion.potencia_activa:.1f}W, "
+                    f"voltaje {ultima_medicion.voltaje_rms:.1f}V, "
+                    f"energia acumulada {ultima_medicion.kwh_acumulado:.3f} kWh."
+                )
+
+            if ultimo_artefacto:
+                contexto_partes.append(
+                    f"Artefacto detectado actualmente: {ultimo_artefacto.nombre_artefacto} "
+                    f"con {ultimo_artefacto.confianza*100:.0f}% de confianza."
+                )
+
+            if ultima_prediccion:
+                contexto_partes.append(
+                    f"Gasto mensual proyectado: S/ {ultima_prediccion.costo_proyectado_soles:.2f} "
+                    f"a una tarifa de S/ {ultima_prediccion.tarifa_usada:.2f} por kWh."
+                )
+
+            contexto = " ".join(contexto_partes) if contexto_partes else "Sin datos de consumo disponibles todavia."
+
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            model = genai.GenerativeModel('gemini-2.5-flash')
+
+            prompt = f"""Eres el asistente de EcoWatt, un sistema de monitoreo de consumo electrico residencial en Peru.
+
+Datos actuales del hogar:
+{contexto}
+
+Pregunta del usuario: {pregunta}
+
+Responde en español, de forma breve (maximo 3 oraciones), clara y orientada a dar una recomendacion practica y accionable sobre ahorro de energia. Usa los datos reales proporcionados, no inventes numeros. Si no tienes datos suficientes, dilo honestamente."""
+
+            response = model.generate_content(prompt)
+
+            return Response({
+                "pregunta": pregunta,
+                "respuesta": response.text,
+                "contexto_usado": contexto,
+            })
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            ) 
