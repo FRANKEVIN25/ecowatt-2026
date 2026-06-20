@@ -62,10 +62,12 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="data/sample_measurements.csv")
     parser.add_argument("--seconds", type=int, default=3600)
+    parser.add_argument("--samples", type=int, help="Alias for --seconds.")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
-    data = generate_mock_measurements(seconds=args.seconds, seed=args.seed)
+    sample_count = args.samples if args.samples is not None else args.seconds
+    data = generate_mock_measurements(seconds=sample_count, seed=args.seed)
     save_measurements(data, args.output)
     print(f"Saved {len(data)} rows to {args.output}")
 

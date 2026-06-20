@@ -1,0 +1,8 @@
+{
+  "model": "cost_regression_refit_house8",
+  "training_data": "ml/data/refit_house8_training.csv",
+  "data_type": "refit_house8_converted",
+  "mae_soles": 23.313457847536228,
+  "r2": 0.346403445403207,
+  "notes": "Initial SCRUM-24 baseline using converted REFIT House8 aggregate power, elapsed time, rolling active power and tariff."
+}

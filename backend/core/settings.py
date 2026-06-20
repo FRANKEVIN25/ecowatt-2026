@@ -21,6 +21,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    'corsheaders',
     'rest_framework',
     'channels',
 ]
@@ -35,6 +36,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,6 +82,8 @@ CHANNEL_LAYERS = {
 MQTT_BROKER_HOST = env('MQTT_BROKER_HOST')
 MQTT_BROKER_PORT = env.int('MQTT_BROKER_PORT')
 MQTT_TOPIC = env('MQTT_TOPIC')
+GEMINI_API_KEY = env('GEMINI_API_KEY')
+CLAUDE_API_KEY = env('CLAUDE_API_KEY', default='')
 
 # REST Framework
 REST_FRAMEWORK = {
@@ -99,3 +103,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import joblib
 import torch
+import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
@@ -33,7 +34,9 @@ def train(
 
     model = SGNClassifier(input_features=len(FEATURE_COLUMNS), classes=len(encoder.classes_))
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
-    criterion = nn.CrossEntropyLoss()
+    class_counts = np.bincount(y_train, minlength=len(encoder.classes_)).clip(min=1)
+    class_weights = class_counts.sum() / (len(class_counts) * class_counts)
+    criterion = nn.CrossEntropyLoss(weight=torch.tensor(class_weights, dtype=torch.float32))
 
     train_loader = DataLoader(
         TensorDataset(torch.from_numpy(x_train), torch.from_numpy(y_train)),
@@ -56,7 +59,7 @@ def train(
 
     metrics = {
         "accuracy": float(accuracy_score(y_val, predictions)),
-        "macro_f1": float(f1_score(y_val, predictions, average="macro")),
+        "macro_f1": float(f1_score(y_val, predictions, average="macro", zero_division=0)),
     }
 
     output = Path(output_path)
