@@ -40,7 +40,7 @@ EcoWatt es una solución integral para el monitoreo y gestión del consumo eléc
                                 ↓
                     [Pipeline NILM]
                     ├── Preprocesamiento (ventanas 1s)
-                    ├── SGN — Semantics-Guided Neural Network (PyTorch)
+                    ├── SGN — Subtask Gated Network (PyTorch)
                     ├── Seq2Point (backup)
                     └── Regresión Lineal — predicción de gasto
                                 ↓
@@ -50,6 +50,8 @@ EcoWatt es una solución integral para el monitoreo y gestión del consumo eléc
 ```
 
 > Base científica: Chatterjee & Heer (2025) — *Non-Intrusive Load Monitoring (NILM) with very low-frequency data from smart meters in Switzerland*. Energy & Buildings 344, 116002. [DOI](https://doi.org/10.1016/j.enbuild.2025.116002)
+>
+> Arquitectura SGN: Shin et al. (2018) — *Subtask Gated Networks for Non-Intrusive Load Monitoring*. [arXiv](https://arxiv.org/abs/1811.06692)
 
 ---
 
@@ -198,6 +200,7 @@ DEBUG=True
 ## Referencias científicas
 
 - Chatterjee, A., & Heer, P. (2025). *Non-Intrusive Load Monitoring (NILM) with very low-frequency data from smart meters in Switzerland*. Energy & Buildings, 344, 116002. https://doi.org/10.1016/j.enbuild.2025.116002
+- Shin, C., Joo, S., Yim, J., Lee, H., Moon, T., & Rhee, W. (2018). *Subtask Gated Networks for Non-Intrusive Load Monitoring*. https://arxiv.org/abs/1811.06692
 - Kelly, J., & Knottenbelt, W. (2015). *Neural NILM: Deep neural networks applied to energy disaggregation*. ACM BuildSys 2015.
 - Murray, D., Stankovic, L., & Stankovic, V. (2017). *An electrical load measurements dataset of United Kingdom households*. Scientific Data, 4.
 

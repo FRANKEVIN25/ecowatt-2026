@@ -28,6 +28,8 @@ python -m ecowatt_ml.convert_refit --input "C:\Users\jessz\Downloads\CLEAN_REFIT
 python -m ecowatt_ml.train_cost_regression --input data/sample_measurements.csv --output models/cost_regression.joblib
 python -m ecowatt_ml.train_sgn --input data/sample_measurements.csv --output models/sgn_mock.pt --epochs 5
 python -m ecowatt_ml.train_sgn --input data/refit_house8_training.csv --output models/sgn_v2.pt --epochs 50 --window-size 60
+python -m ecowatt_ml.train_sgn_v3 --refit-root "C:\Users\jessz\Downloads\CLEAN_REFIT_081116" --output models/sgn_v3_general.pt
+python -m ecowatt_ml.personalize_sgn_v3 --base-model models/sgn_v3_general.pt --refit-root "C:\Users\jessz\Downloads\CLEAN_REFIT_081116" --output models/sgn_v3.pt
 python -m ecowatt_ml.predict --input data/sample_measurements.csv --sgn-model models/sgn_mock.pt --cost-model models/cost_regression.joblib
 python -m ecowatt_ml.predict --sgn-model models/sgn_mock.pt --features "220,0.46,16.2,101,28,105,0.96"
 ```
@@ -58,3 +60,22 @@ El entrenamiento SGN divide primero las filas de forma cronologica, deja una
 separacion de `window_size - 1` filas y recien entonces genera las ventanas.
 Esto evita que entrenamiento y validacion compartan mediciones. El escalador
 tambien se ajusta solamente con el bloque de entrenamiento.
+
+## SGN v3
+
+`sgn_v3` reemplaza la clasificacion multiclase dominante de `v2` por el
+planteamiento NILM de Subtask Gated Networks:
+
+- una subred estima la potencia del aparato;
+- otra subred estima si el aparato esta encendido;
+- la salida de potencia se habilita mediante esa probabilidad;
+- cada aparato usa su canal REFIT real y un umbral de activacion propio;
+- el modelo general se entrena con nueve casas, valida en House 3 y prueba
+  generalizacion en House 8, que no participa en el entrenamiento;
+- la version desplegable se personaliza con el primer 60% cronologico de
+  House 8, calibra umbrales con el siguiente 20% y se prueba en el ultimo 20%,
+  sin ventanas compartidas.
+
+Las metricas principales son F1 y balanced accuracy por aparato. Accuracy no
+se usa sola porque los aparatos permanecen apagados la mayor parte del tiempo.
+Consulta `models/sgn_v3_metrics.json` para los resultados y baselines completos.

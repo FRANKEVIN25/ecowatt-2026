@@ -1,3 +1,3 @@
-from .sgn import SGNClassifier
+from .sgn import SGNApplianceModel, SGNClassifier, SGNDisaggregator
 
-__all__ = ["SGNClassifier"]
+__all__ = ["SGNApplianceModel", "SGNClassifier", "SGNDisaggregator"]

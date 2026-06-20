@@ -25,3 +25,28 @@ Real REFIT training test:
 - Status: experimental; the leakage is fixed, but RNF-02 is not met.
 
 Next step: add official House8 appliance names from `CLEAN_READ_ME_081116.txt` or `MetaData_Tables.xlsx`, redesign the window target/balancing so rare appliance events survive the 60-row aggregation, and add independent houses for external validation before treating REFIT training as final.
+
+## SGN v3 correction
+
+The official REFIT/NILMTK channel map is now used for House 8:
+
+- `Appliance4`: washing machine
+- `Appliance8`: microwave
+- `Appliance9`: kettle
+
+The final personalized checkpoint uses a chronological 60/20/20 split over the
+complete 6,118,469-row House 8 file. The final 20% contains 70,875 evaluation
+windows and has zero overlap with training or threshold calibration.
+
+- Accuracy: 0.9877
+- Macro F1: 0.3475
+- Macro balanced accuracy: 0.7619
+- Mean MAE: 16.19 W
+- Kettle F1: 0.5141
+- Washing-machine F1: 0.4196
+- Microwave F1: 0.1087
+- RNF-02: not passed
+
+This is a substantial and leakage-free improvement over `sgn_v2`, but it is
+not presented as production-grade disaggregation. Accuracy is high because
+off-state samples dominate; F1 remains the primary acceptance metric.

@@ -10,7 +10,8 @@ import torch
 
 from .config import FEATURE_COLUMNS, WindowConfig
 from .data import load_measurements
-from .models import SGNClassifier
+from .models import SGNClassifier, SGNDisaggregator
+from .refit import build_input_features
 
 
 def _load_sgn(model_path: str | Path) -> tuple[SGNClassifier, dict, dict]:
@@ -25,10 +26,90 @@ def _load_sgn(model_path: str | Path) -> tuple[SGNClassifier, dict, dict]:
     return model, checkpoint, sidecar
 
 
+def _predict_sgn_v3(
+    feature_rows: list[list[float]] | np.ndarray,
+    model_path: str | Path,
+) -> dict[str, object]:
+    checkpoint = torch.load(model_path, map_location="cpu")
+    sidecar = joblib.load(Path(model_path).with_suffix(".joblib"))
+    appliances = checkpoint["appliances"]
+    model = SGNDisaggregator(
+        appliances,
+        input_channels=int(checkpoint["input_channels"]),
+    )
+    model.load_state_dict(checkpoint["state_dict"])
+    model.eval()
+
+    features = np.asarray(feature_rows, dtype=np.float32)
+    if features.ndim != 2 or features.shape[1] != len(FEATURE_COLUMNS):
+        raise ValueError(
+            "feature_rows must have shape [window, 7] for "
+            "[V, I, phi, P, Q, S, fp]."
+        )
+    required_window = int(checkpoint["window_size"])
+    if len(features) != required_window:
+        raise ValueError(f"SGN v3 requires exactly {required_window} rows.")
+
+    aggregate = features[:, FEATURE_COLUMNS.index("active_power_w")][None, :]
+    normalized, _, _ = build_input_features(
+        aggregate,
+        np.asarray(sidecar["feature_mean"], dtype=np.float32),
+        np.asarray(sidecar["feature_std"], dtype=np.float32),
+    )
+    active: list[dict[str, object]] = []
+    all_predictions: list[dict[str, object]] = []
+    with torch.no_grad():
+        outputs = model(torch.from_numpy(normalized))
+        for appliance in appliances:
+            power, state_logit, _ = outputs[appliance]
+            probability = float(torch.sigmoid(state_logit)[0])
+            is_on = (
+                probability >= checkpoint["probability_thresholds"][appliance]
+            )
+            predicted_power = (
+                float(power[0] * checkpoint["power_scales"][appliance])
+                if is_on
+                else 0.0
+            )
+            prediction = {
+                "appliance": appliance,
+                "confidence": round(probability, 4),
+                "predicted_power_w": round(predicted_power, 2),
+                "is_on": is_on,
+            }
+            all_predictions.append(prediction)
+            if prediction["is_on"]:
+                active.append(prediction)
+
+    ranked = sorted(
+        active or all_predictions,
+        key=lambda item: (item["is_on"], item["confidence"]),
+        reverse=True,
+    )
+    primary = ranked[0]
+    detected_appliance = primary["appliance"] if active else "standby"
+    confidence = (
+        primary["confidence"]
+        if active
+        else round(1.0 - float(primary["confidence"]), 4)
+    )
+    return {
+        "detected_appliance": detected_appliance,
+        "confidence": confidence,
+        "predicted_power_w": primary["predicted_power_w"],
+        "active_appliances": active,
+        "appliance_predictions": all_predictions,
+    }
+
+
 def predict_appliance_from_window(
     feature_rows: list[list[float]] | np.ndarray,
     model_path: str | Path,
 ) -> dict[str, object]:
+    checkpoint = torch.load(model_path, map_location="cpu")
+    if checkpoint.get("version") == "sgn_v3":
+        return _predict_sgn_v3(feature_rows, model_path)
+
     model, checkpoint, sidecar = _load_sgn(model_path)
     features = np.asarray(feature_rows, dtype=np.float32)
     if features.ndim != 2 or features.shape[1] != len(FEATURE_COLUMNS):
@@ -65,7 +146,7 @@ def predict_appliance_from_features(
 
 
 def predict_appliance(input_path: str | Path, model_path: str | Path) -> dict[str, object]:
-    _, checkpoint, _ = _load_sgn(model_path)
+    checkpoint = torch.load(model_path, map_location="cpu")
     data = load_measurements(input_path)
     window_size = int(checkpoint["window_size"])
     latest = data.tail(window_size)
