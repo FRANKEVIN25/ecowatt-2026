@@ -48,10 +48,11 @@ def convert_refit_house(
     for chunk in pd.read_csv(input_file, chunksize=100_000):
         if "Issues" in chunk.columns:
             chunk = chunk[chunk["Issues"].fillna(0).astype(float) == 0]
+        filtered_rows = len(chunk)
         if every_n_rows > 1:
             positions = np.arange(source_rows_seen, source_rows_seen + len(chunk))
             chunk = chunk[(positions % every_n_rows) == 0]
-        source_rows_seen += len(chunk)
+        source_rows_seen += filtered_rows
         if chunk.empty:
             continue
 

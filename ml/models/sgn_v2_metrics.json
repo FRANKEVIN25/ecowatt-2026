@@ -1,0 +1,51 @@
+{
+  "model": "sgn_v2",
+  "training_data": "data/refit_house8_training.csv",
+  "data_type": "refit_real",
+  "samples": 50000,
+  "epochs": 50,
+  "batch_size": 32,
+  "window_size": 60,
+  "stride": 15,
+  "seed": 42,
+  "accuracy": 0.5204855842185129,
+  "macro_f1": 0.2736907180489887,
+  "macro_f1_all_classes": 0.10947628721959549,
+  "rnf_02_passed": false,
+  "classes": [
+    "appliance_1",
+    "appliance_2",
+    "appliance_3",
+    "appliance_4",
+    "appliance_5",
+    "appliance_6",
+    "appliance_7",
+    "appliance_8",
+    "appliance_9",
+    "standby"
+  ],
+  "validation_support": {
+    "appliance_1": 1,
+    "appliance_2": 26,
+    "appliance_3": 0,
+    "appliance_4": 0,
+    "appliance_5": 0,
+    "appliance_6": 547,
+    "appliance_7": 85,
+    "appliance_8": 0,
+    "appliance_9": 0,
+    "standby": 0
+  },
+  "split": {
+    "strategy": "chronological_purged",
+    "validation_ratio": 0.2,
+    "train_rows": 40000,
+    "validation_rows": 9941,
+    "purge_rows": 59,
+    "train_row_end": 39999,
+    "validation_row_start": 40059,
+    "overlap_rows": 0,
+    "train_windows": 2663,
+    "validation_windows": 659
+  }
+}
