@@ -66,10 +66,10 @@ ASGI_APPLICATION = 'core.asgi.application'
 
 # Base de datos
 DATABASES = {
-    'default': env.db()
+    'default': env.db()    # <---- coneccion a la base de datos desde el .env
 }
 
-# Channels — WebSocket
+# Channels —  Para WebSocket
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer'
