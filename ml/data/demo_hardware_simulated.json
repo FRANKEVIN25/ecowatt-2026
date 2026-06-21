@@ -1,0 +1,15 @@
+{
+  "rows": 57267,
+  "sessions": 640,
+  "labels": {
+    "standby": 14031,
+    "refrigeradora": 7452,
+    "lavadora": 7261,
+    "hervidor": 7188,
+    "microondas": 7174,
+    "foco_100w": 7104,
+    "foco_25w": 7057
+  },
+  "source": "synthetic_hardware_substitute",
+  "disclosure": "Simulated data; not REFIT and not measured by EcoWatt hardware."
+}

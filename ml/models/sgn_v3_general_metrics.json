@@ -1,0 +1,304 @@
+{
+  "model": "sgn_v3_general",
+  "version": "sgn_v3",
+  "architecture": "subtask_gated_sequence_to_point",
+  "source": {
+    "dataset": "REFIT Electrical Load Measurements (Cleaned)",
+    "dataset_doi": "10.15129/9ab14b0e-19ac-4279-938f-27f643078cec",
+    "sgn_paper": "Shin et al. (2018), Subtask Gated Networks for NILM",
+    "sgn_paper_url": "https://arxiv.org/abs/1811.06692"
+  },
+  "appliances": [
+    "washing_machine",
+    "microwave",
+    "kettle"
+  ],
+  "train_houses": [
+    2,
+    4,
+    5,
+    6,
+    9,
+    13,
+    17,
+    19,
+    20
+  ],
+  "validation_house": 3,
+  "test_house": 8,
+  "split_strategy": "house_holdout",
+  "test_house_seen_during_training": false,
+  "epochs_max": 10,
+  "epochs_trained": {
+    "washing_machine": 10,
+    "microwave": 10,
+    "kettle": 10
+  },
+  "batch_size": 256,
+  "window_size": 127,
+  "training_stride": 8,
+  "evaluation_stride": 15,
+  "thresholds_w": {
+    "washing_machine": 20.0,
+    "microwave": 200.0,
+    "kettle": 2000.0
+  },
+  "probability_thresholds": {
+    "washing_machine": 0.71,
+    "microwave": 0.94,
+    "kettle": 0.95
+  },
+  "power_scales": {
+    "washing_machine": 2252.0,
+    "microwave": 2545.0,
+    "kettle": 3017.0
+  },
+  "training_summary": {
+    "2": {
+      "valid_centers": 593558,
+      "washing_machine": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "microwave": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "kettle": {
+        "samples": 600,
+        "on_samples": 300
+      }
+    },
+    "4": {
+      "valid_centers": 627511,
+      "washing_machine": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "microwave": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "kettle": {
+        "samples": 307,
+        "on_samples": 7
+      }
+    },
+    "5": {
+      "valid_centers": 651508,
+      "washing_machine": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "microwave": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "kettle": {
+        "samples": 600,
+        "on_samples": 300
+      }
+    },
+    "6": {
+      "valid_centers": 624250,
+      "washing_machine": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "microwave": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "kettle": {
+        "samples": 600,
+        "on_samples": 300
+      }
+    },
+    "9": {
+      "valid_centers": 652914,
+      "washing_machine": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "microwave": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "kettle": {
+        "samples": 600,
+        "on_samples": 300
+      }
+    },
+    "13": {
+      "valid_centers": 473571,
+      "washing_machine": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "microwave": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "kettle": {
+        "samples": 600,
+        "on_samples": 300
+      }
+    },
+    "17": {
+      "valid_centers": 484036,
+      "washing_machine": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "microwave": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "kettle": {
+        "samples": 600,
+        "on_samples": 300
+      }
+    },
+    "19": {
+      "valid_centers": 544465,
+      "washing_machine": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "microwave": {
+        "samples": 597,
+        "on_samples": 297
+      },
+      "kettle": {
+        "samples": 526,
+        "on_samples": 226
+      }
+    },
+    "20": {
+      "valid_centers": 530950,
+      "washing_machine": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "microwave": {
+        "samples": 600,
+        "on_samples": 300
+      },
+      "kettle": {
+        "samples": 600,
+        "on_samples": 300
+      }
+    }
+  },
+  "validation_sampling": {
+    "house": 3,
+    "windows": 30000,
+    "first_unix": 1380137264.0,
+    "last_unix": 1433240344.0,
+    "stride_rows": 15,
+    "uniformly_limited": true
+  },
+  "test_sampling": {
+    "house": 8,
+    "windows": 30000,
+    "first_unix": 1383344414.0,
+    "last_unix": 1431300501.0,
+    "stride_rows": 15,
+    "uniformly_limited": true
+  },
+  "validation": {
+    "washing_machine": {
+      "support": 30000,
+      "on_support": 447,
+      "on_prevalence": 0.0149,
+      "accuracy": 0.952,
+      "balanced_accuracy": 0.6914114262238903,
+      "precision": 0.13785557986870897,
+      "recall": 0.4228187919463087,
+      "f1": 0.2079207920792079,
+      "mae_w": 20.16617202758789,
+      "always_off_accuracy": 0.9851,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 6.653966903686523
+    },
+    "microwave": {
+      "support": 30000,
+      "on_support": 19,
+      "on_prevalence": 0.0006333333333333333,
+      "accuracy": 0.9947333333333334,
+      "balanced_accuracy": 0.6291774264051443,
+      "precision": 0.03355704697986577,
+      "recall": 0.2631578947368421,
+      "f1": 0.05952380952380952,
+      "mae_w": 6.902559280395508,
+      "always_off_accuracy": 0.9993666666666666,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 0.9354000091552734
+    },
+    "kettle": {
+      "support": 30000,
+      "on_support": 26,
+      "on_prevalence": 0.0008666666666666666,
+      "accuracy": 0.9969333333333333,
+      "balanced_accuracy": 0.8255385436609164,
+      "precision": 0.17,
+      "recall": 0.6538461538461539,
+      "f1": 0.2698412698412698,
+      "mae_w": 8.810429573059082,
+      "always_off_accuracy": 0.9991333333333333,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 3.4126334190368652
+    }
+  },
+  "test": {
+    "washing_machine": {
+      "support": 30000,
+      "on_support": 359,
+      "on_prevalence": 0.011966666666666667,
+      "accuracy": 0.9105333333333333,
+      "balanced_accuracy": 0.6492774867004119,
+      "precision": 0.052712581762216236,
+      "recall": 0.3816155988857939,
+      "f1": 0.09263015551048005,
+      "mae_w": 25.266725540161133,
+      "always_off_accuracy": 0.9880333333333333,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 11.348299980163574
+    },
+    "microwave": {
+      "support": 30000,
+      "on_support": 28,
+      "on_prevalence": 0.0009333333333333333,
+      "accuracy": 0.9877333333333334,
+      "balanced_accuracy": 0.7797754094297535,
+      "precision": 0.043010752688172046,
+      "recall": 0.5714285714285714,
+      "f1": 0.08,
+      "mae_w": 17.062225341796875,
+      "always_off_accuracy": 0.9990666666666667,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 3.2714667320251465
+    },
+    "kettle": {
+      "support": 30000,
+      "on_support": 45,
+      "on_prevalence": 0.0015,
+      "accuracy": 0.9932,
+      "balanced_accuracy": 0.9078395370834029,
+      "precision": 0.15879828326180256,
+      "recall": 0.8222222222222222,
+      "f1": 0.26618705035971224,
+      "mae_w": 19.951744079589844,
+      "always_off_accuracy": 0.9985,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 4.075099945068359
+    }
+  },
+  "accuracy": 0.9638222222222222,
+  "macro_f1": 0.14627240195673077,
+  "macro_balanced_accuracy": 0.7789641444045228,
+  "mean_mae_w": 20.760231653849285,
+  "rnf_02_passed": false,
+  "primary_metric": "macro_f1_on_unseen_house",
+  "seed": 42
+}

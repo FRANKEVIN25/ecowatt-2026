@@ -1,0 +1,146 @@
+{
+  "model": "sgn_v3",
+  "version": "sgn_v3_personalized",
+  "base_model": "models/sgn_v3_general.pt",
+  "personalized_house": 8,
+  "split_strategy": "chronological_60_20_20_with_purged_windows",
+  "rows": {
+    "total": 6118469,
+    "training_end_exclusive": 3671081,
+    "validation_end_exclusive": 4894775,
+    "training_windows": 373574,
+    "validation_windows": 70539,
+    "test_windows": 70875,
+    "window_overlap_between_splits": 0
+  },
+  "appliances": [
+    "washing_machine",
+    "microwave",
+    "kettle"
+  ],
+  "epochs_max": 20,
+  "epochs_trained": {
+    "washing_machine": 20,
+    "microwave": 8,
+    "kettle": 12
+  },
+  "training_summary": {
+    "washing_machine": {
+      "samples": 6000,
+      "on_samples": 3000
+    },
+    "microwave": {
+      "samples": 3327,
+      "on_samples": 327
+    },
+    "kettle": {
+      "samples": 3238,
+      "on_samples": 238
+    }
+  },
+  "probability_thresholds": {
+    "washing_machine": 0.9199999999999999,
+    "microwave": 0.6499999999999999,
+    "kettle": 0.72
+  },
+  "validation": {
+    "washing_machine": {
+      "support": 70539,
+      "on_support": 910,
+      "on_prevalence": 0.01290066488042076,
+      "accuracy": 0.9808758275563872,
+      "balanced_accuracy": 0.7343616773294063,
+      "precision": 0.33307984790874523,
+      "recall": 0.48131868131868133,
+      "f1": 0.39370786516853934,
+      "mae_w": 16.321107864379883,
+      "always_off_accuracy": 0.9870993351195793,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 11.408312797546387
+    },
+    "microwave": {
+      "support": 70539,
+      "on_support": 133,
+      "on_prevalence": 0.0018854817902153418,
+      "accuracy": 0.9881342236209756,
+      "balanced_accuracy": 0.7238905326549621,
+      "precision": 0.07384987893462469,
+      "recall": 0.45864661654135336,
+      "f1": 0.12721584984358708,
+      "mae_w": 14.21850872039795,
+      "always_off_accuracy": 0.9981145182097847,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 4.685946941375732
+    },
+    "kettle": {
+      "support": 70539,
+      "on_support": 242,
+      "on_prevalence": 0.003430726264903103,
+      "accuracy": 0.9936489034434851,
+      "balanced_accuracy": 0.8979813746563136,
+      "precision": 0.3265993265993266,
+      "recall": 0.8016528925619835,
+      "f1": 0.46411483253588515,
+      "mae_w": 16.887798309326172,
+      "always_off_accuracy": 0.9965692737350968,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 9.299437522888184
+    }
+  },
+  "test": {
+    "washing_machine": {
+      "support": 70875,
+      "on_support": 1161,
+      "on_prevalence": 0.01638095238095238,
+      "accuracy": 0.9792733686067019,
+      "balanced_accuracy": 0.7226647278481984,
+      "precision": 0.3875912408759124,
+      "recall": 0.4573643410852713,
+      "f1": 0.4195969972342947,
+      "mae_w": 20.659914016723633,
+      "always_off_accuracy": 0.9836190476190476,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 16.379358291625977
+    },
+    "microwave": {
+      "support": 70875,
+      "on_support": 129,
+      "on_prevalence": 0.00182010582010582,
+      "accuracy": 0.9893615520282187,
+      "balanced_accuracy": 0.6735522560565508,
+      "precision": 0.06415620641562064,
+      "recall": 0.35658914728682173,
+      "f1": 0.10874704491725769,
+      "mae_w": 12.929944038391113,
+      "always_off_accuracy": 0.9981798941798942,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 4.581276893615723
+    },
+    "kettle": {
+      "support": 70875,
+      "on_support": 268,
+      "on_prevalence": 0.003781305114638448,
+      "accuracy": 0.9943985890652557,
+      "balanced_accuracy": 0.8893904329387662,
+      "precision": 0.3825136612021858,
+      "recall": 0.7835820895522388,
+      "f1": 0.5140758873929009,
+      "mae_w": 14.967957496643066,
+      "always_off_accuracy": 0.9962186948853615,
+      "always_off_f1": 0.0,
+      "always_off_mae_w": 10.1974458694458
+    }
+  },
+  "accuracy": 0.9876778365667254,
+  "macro_f1": 0.34747330984815106,
+  "macro_balanced_accuracy": 0.7618691389478385,
+  "mean_mae_w": 16.185938517252605,
+  "rnf_02_passed": false,
+  "primary_metric": "macro_f1_on_future_chronological_holdout",
+  "external_generalization_before_personalization": {
+    "accuracy": 0.9638222222222222,
+    "macro_f1": 0.14627240195673077,
+    "macro_balanced_accuracy": 0.7789641444045228
+  },
+  "seed": 42
+}
