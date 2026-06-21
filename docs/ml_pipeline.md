@@ -38,3 +38,27 @@ Entregar una ruta reproducible desde datos crudos de medicion electrica hasta:
 - Deben reportarse F1, balanced accuracy, MAE y baseline siempre-apagado.
 - La salida debe poder convertirse directamente a los modelos Django:
   `ArtefactoDetectado` y `PrediccionGasto`.
+
+## Niveles de evidencia
+
+Las métricas deben mostrarse separadas para evitar confundir una demostración
+con una validación real:
+
+| nivel | uso | métrica disponible |
+| --- | --- | --- |
+| REFIT House 8 | validación con datos públicos reales | macro-F1 0.347, balanced accuracy 0.762 |
+| simulación de contingencia | continuidad de la demo sin hardware | macro-F1 0.818, accuracy 0.845 |
+| hardware EcoWatt | aceptación final del sistema | pendiente de mediciones etiquetadas |
+
+El benchmark sintético usa 640 sesiones independientes y deja 141 sesiones
+completas para prueba. No tiene solapamiento de sesiones ni se ajustó alterando
+las etiquetas de prueba. Sus números no deben atribuirse a REFIT.
+
+## Ruta para mejorar F1 y gasto
+
+1. Corregir el contrato MQTT y almacenar potencia agregada continua.
+2. Etiquetar eventos de encendido/apagado de al menos una semana por hogar.
+3. Evaluar por días o sesiones no vistas, nunca por ventanas aleatorias.
+4. Entrenar NILM por aparato y calibrar umbrales con validación separada.
+5. Proyectar kWh y soles con historial diario, tarifa y calendario.
+6. Mostrar intervalos de confianza y comparar contra un baseline simple.

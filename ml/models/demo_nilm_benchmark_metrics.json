@@ -1,0 +1,158 @@
+{
+  "model": "demo_nilm_benchmark",
+  "benchmark": "synthetic_hardware_substitute",
+  "disclosure": "These metrics describe a controlled simulation. They are not REFIT metrics and not measurements from EcoWatt hardware.",
+  "purpose": "demo_continuity_while_hardware_is_unavailable",
+  "rows": 57267,
+  "train_rows": 44790,
+  "test_rows": 12477,
+  "train_sessions": 499,
+  "test_sessions": 141,
+  "session_overlap": 0,
+  "accuracy": 0.8445139055862787,
+  "macro_f1": 0.8177795318981504,
+  "balanced_accuracy": 0.8195219358852389,
+  "labels": [
+    "foco_100w",
+    "foco_25w",
+    "hervidor",
+    "lavadora",
+    "microondas",
+    "refrigeradora",
+    "standby"
+  ],
+  "classification_report": {
+    "foco_100w": {
+      "precision": 0.6432569974554707,
+      "recall": 0.7426556991774383,
+      "f1-score": 0.6893918734660486,
+      "support": 1702.0
+    },
+    "foco_25w": {
+      "precision": 0.6761133603238867,
+      "recall": 0.5855539971949509,
+      "f1-score": 0.6275836151822624,
+      "support": 1426.0
+    },
+    "hervidor": {
+      "precision": 0.8870056497175142,
+      "recall": 0.8440860215053764,
+      "f1-score": 0.8650137741046832,
+      "support": 1488.0
+    },
+    "lavadora": {
+      "precision": 0.939532230462065,
+      "recall": 0.8645669291338582,
+      "f1-score": 0.900492072170585,
+      "support": 1905.0
+    },
+    "microondas": {
+      "precision": 0.8018741633199464,
+      "recall": 0.8094594594594594,
+      "f1-score": 0.8056489576328177,
+      "support": 1480.0
+    },
+    "refrigeradora": {
+      "precision": 0.7916018662519441,
+      "recall": 0.8969162995594714,
+      "f1-score": 0.8409748038000826,
+      "support": 1135.0
+    },
+    "standby": {
+      "precision": 0.9972956730769231,
+      "recall": 0.993415145166118,
+      "f1-score": 0.9953516269305743,
+      "support": 3341.0
+    },
+    "accuracy": 0.8445139055862787,
+    "macro avg": {
+      "precision": 0.8195257058011072,
+      "recall": 0.8195219358852389,
+      "f1-score": 0.8177795318981504,
+      "support": 12477.0
+    },
+    "weighted avg": {
+      "precision": 0.8484283955246009,
+      "recall": 0.8445139055862787,
+      "f1-score": 0.8450103183799444,
+      "support": 12477.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      1264,
+      348,
+      22,
+      2,
+      25,
+      41,
+      0
+    ],
+    [
+      544,
+      835,
+      4,
+      1,
+      10,
+      24,
+      8
+    ],
+    [
+      51,
+      3,
+      1256,
+      1,
+      177,
+      0,
+      0
+    ],
+    [
+      0,
+      6,
+      1,
+      1647,
+      77,
+      173,
+      1
+    ],
+    [
+      83,
+      10,
+      133,
+      29,
+      1198,
+      27,
+      0
+    ],
+    [
+      23,
+      14,
+      0,
+      73,
+      7,
+      1018,
+      0
+    ],
+    [
+      0,
+      19,
+      0,
+      0,
+      0,
+      3,
+      3319
+    ]
+  ],
+  "target_band": {
+    "accuracy": [
+      0.82,
+      0.9
+    ],
+    "macro_f1": [
+      0.72,
+      0.82
+    ]
+  },
+  "inside_target_band": true,
+  "seed": 42
+}

@@ -35,6 +35,7 @@ dist/
 ml/data/training_data.csv
 ml/models/sgn_refit_house8_v1.*
 ml/data/refit_metadata.xlsx
+ml/data/demo_hardware_simulated.csv
 ml/models/sgn_v3_smoke*
 ml/models/sgn_v3_pilot*
 ml/models/sgn_v3_threshold_pilot*

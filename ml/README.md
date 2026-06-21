@@ -61,6 +61,31 @@ separacion de `window_size - 1` filas y recien entonces genera las ventanas.
 Esto evita que entrenamiento y validacion compartan mediciones. El escalador
 tambien se ajusta solamente con el bloque de entrenamiento.
 
+## Benchmark sintético de contingencia
+
+Mientras el hardware no entregue mediciones estables, se puede ejecutar una
+simulación reproducible que incluye ruido de sensores, variaciones de voltaje,
+transiciones y cargas superpuestas:
+
+```powershell
+python -m ecowatt_ml.simulate_demo_data
+python -m ecowatt_ml.train_demo_benchmark
+```
+
+El split se realiza por `session_id`: una sesión completa pertenece a
+entrenamiento o a prueba, nunca a ambos. La corrida reproducible con semilla 42
+genera 57,267 filas y obtuvo:
+
+- accuracy: `0.845`;
+- macro-F1: `0.818`;
+- balanced accuracy: `0.820`;
+- sesiones compartidas entre entrenamiento y prueba: `0`.
+
+Los artefactos se guardan como `models/demo_nilm_benchmark.*`. Estas métricas
+son exclusivamente de una simulación controlada: no son resultados REFIT ni
+mediciones del hardware EcoWatt. El CSV completo se regenera localmente y no se
+versiona para evitar duplicar datos derivados.
+
 ## SGN v3
 
 `sgn_v3` reemplaza la clasificacion multiclase dominante de `v2` por el
@@ -79,3 +104,12 @@ planteamiento NILM de Subtask Gated Networks:
 Las metricas principales son F1 y balanced accuracy por aparato. Accuracy no
 se usa sola porque los aparatos permanecen apagados la mayor parte del tiempo.
 Consulta `models/sgn_v3_metrics.json` para los resultados y baselines completos.
+
+## Predicción de gasto
+
+El objetivo de producto es proyectar consumo en kWh y costo en soles, no solo
+clasificar artefactos. El modelo actual de costo sobre House 8 es un baseline
+inicial (`R² = 0.346`, `MAE = S/ 23.31`) y todavía no debe presentarse como una
+predicción final. Para mejorarlo se necesitan varios días de historial por
+hogar, tarifa configurable, variables de calendario y una evaluación temporal
+contra el último bloque de fechas.
