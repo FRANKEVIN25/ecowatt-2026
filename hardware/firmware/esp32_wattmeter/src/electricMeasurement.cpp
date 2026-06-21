@@ -21,7 +21,7 @@ void Measurement::voltageFrequencyMeasurement(uint8_t clocks)
 
     while (count < clocks)
     {
-        adcValue = analogRead(A0);
+        adcValue = analogRead(36);
         if (adcValue > max_val)
             max_val = adcValue;
 
@@ -110,7 +110,7 @@ void Measurement::currentMeasurement(uint8_t clocks)
 
     while (count < clocks)
     {
-        adcValue = analogRead(A1);
+        adcValue = analogRead(39);
         if (adcValue > max_val)
             max_val = adcValue;
 
@@ -202,8 +202,8 @@ void Measurement::allMeasurements(uint8_t clocks)
 
     while (count < clocks)
     {
-        int16_t adcValueVoltage = analogRead(A0);
-        int16_t adcValueCurrent = analogRead(A1);
+        int16_t adcValueVoltage = analogRead(36);
+        int16_t adcValueCurrent = analogRead(39);
 
         // FASE DE SINCRONIZACIÓN INICIAL ÚNICA (Solo mide el primer flanco de cada una)
         if (!begin_measurement_voltage)
@@ -393,14 +393,14 @@ void Measurement::allMeasurementsSimulation(uint8_t clocks)
     //---------------------------------
     // Variables para interpolación
     //---------------------------------
-    int16_t prevV = analogRead(A0);
-    int16_t prevI = analogRead(A1);
+    int16_t prevV = analogRead(36); //A0
+    int16_t prevI = analogRead(39); //A1
 
     uint32_t prevTime = micros();
 
     //---------------------------------
     // Filtro IIR
-    //---------------------------------
+    //--------------------------------
     float vf = prevV;
     float ifilt = prevI;
 
@@ -414,8 +414,8 @@ void Measurement::allMeasurementsSimulation(uint8_t clocks)
 
     while (count < clocks)
     {
-        int16_t rawV = analogRead(A0);
-        int16_t rawI = analogRead(A1);
+        int16_t rawV = analogRead(36);
+        int16_t rawI = analogRead(39);
 
         uint32_t now = micros();
 
@@ -706,11 +706,11 @@ if (pf > 1) pf = 1;
 if (pf < -1) pf = -1;
 
 float angle = acos(pf) * 180.0 / PI;
-this->dephase = angle;
+
 Serial.println(angle);}
 
 void Measurement::MeasurementSetup()
 {
-    this->emon.voltage(A0, 530, -8); //572 y -1.5 simulaion Configura el pin de voltaje y el factor de calibración
-    this->emon.current(A1, 9);   //5.405 Configura el pin de corriente y el factor de calibración para ACS712 5A
+    this->emon.voltage(36, 530, -8); //572 y -1.5 simulaion Configura el pin de voltaje y el factor de calibración
+    this->emon.current(39, 12);   //5.405 Configura el pin de corriente y el factor de calibración para ACS712 5A
 }

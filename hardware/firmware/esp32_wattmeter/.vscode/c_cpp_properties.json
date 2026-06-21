@@ -10,7 +10,6 @@
             "includePath": [
                 "C:/Users/User/Documents/UNIVERSIDAD/ecowatt-2026/hardware/firmware/arduino/include",
                 "C:/Users/User/Documents/UNIVERSIDAD/ecowatt-2026/hardware/firmware/arduino/src",
-                "C:/Users/User/Documents/UNIVERSIDAD/ecowatt-2026/hardware/firmware/arduino/.pio/libdeps/uno/ArduinoJson/src",
                 "C:/Users/User/Documents/UNIVERSIDAD/ecowatt-2026/hardware/firmware/arduino/.pio/libdeps/uno/EmonLib",
                 "C:/Users/User/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/User/.platformio/packages/framework-arduino-avr/variants/standard",
@@ -26,7 +25,6 @@
                 "path": [
                     "C:/Users/User/Documents/UNIVERSIDAD/ecowatt-2026/hardware/firmware/arduino/include",
                     "C:/Users/User/Documents/UNIVERSIDAD/ecowatt-2026/hardware/firmware/arduino/src",
-                    "C:/Users/User/Documents/UNIVERSIDAD/ecowatt-2026/hardware/firmware/arduino/.pio/libdeps/uno/ArduinoJson/src",
                     "C:/Users/User/Documents/UNIVERSIDAD/ecowatt-2026/hardware/firmware/arduino/.pio/libdeps/uno/EmonLib",
                     "C:/Users/User/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/User/.platformio/packages/framework-arduino-avr/variants/standard",
