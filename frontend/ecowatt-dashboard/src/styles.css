@@ -187,6 +187,10 @@ button:focus-visible {
   margin-top: 1rem;
 }
 
+.dashboard-anchor {
+  scroll-margin-top: 1rem;
+}
+
 .eyebrow {
   color: #71849a;
   font-size: 0.68rem;

@@ -46,10 +46,10 @@ import {
 } from "./mock-data";
 
 const navItems = [
-  { label: "Resumen", icon: Home },
-  { label: "Consumo", icon: BarChart3 },
-  { label: "NILM inteligente", icon: BrainCircuit },
-  { label: "Predicción", icon: Target },
+  { id: "resumen", label: "Resumen", icon: Home },
+  { id: "consumo", label: "Consumo", icon: BarChart3 },
+  { id: "nilm", label: "NILM inteligente", icon: BrainCircuit },
+  { id: "prediccion", label: "Predicción", icon: Target },
 ];
 
 function MetricCard({
@@ -117,6 +117,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [period, setPeriod] = useState<"Hoy" | "Semana" | "Mes">("Hoy");
   const [assistantOpen, setAssistantOpen] = useState(true);
+  const [activeSection, setActiveSection] = useState("resumen");
 
   const totalAppliancePower = useMemo(
     () => applianceUsage.reduce((total, item) => total + item.powerW, 0),
@@ -125,6 +126,20 @@ export default function App() {
   const saving = (
     monthlyPrediction.projectedCostSoles - monthlyPrediction.optimizedCostSoles
   ).toFixed(2);
+
+  const scrollToSection = (sectionId: string) => {
+    document.getElementById(sectionId)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+    setActiveSection(sectionId);
+    setMenuOpen(false);
+  };
+
+  const openRecommendations = () => {
+    setAssistantOpen(true);
+    window.setTimeout(() => scrollToSection("recomendaciones"), 0);
+  };
 
   return (
     <main className="app-shell">
@@ -154,14 +169,18 @@ export default function App() {
         </div>
 
         <nav className="mt-4 space-y-1 px-3">
-          {navItems.map(({ label, icon: Icon }, index) => (
+          {navItems.map(({ id, label, icon: Icon }) => (
             <button
               key={label}
-              className={`nav-item ${index === 0 ? "nav-item-active" : ""}`}
+              className={`nav-item ${activeSection === id ? "nav-item-active" : ""}`}
+              onClick={() => scrollToSection(id)}
+              aria-current={activeSection === id ? "page" : undefined}
             >
               <Icon size={18} />
               <span>{label}</span>
-              {index === 0 && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-300" />}
+              {activeSection === id && (
+                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              )}
             </button>
           ))}
         </nav>
@@ -221,7 +240,7 @@ export default function App() {
         </header>
 
         <div className="dashboard-scroll">
-          <section className="hero-panel">
+          <section id="resumen" className="hero-panel dashboard-anchor">
             <div className="relative z-10 max-w-2xl">
               <Pill tone="slate">
                 <Sparkles size={12} />
@@ -243,7 +262,7 @@ export default function App() {
                   <Bot size={17} />
                   {assistantOpen ? "Ocultar análisis" : "Ver análisis inteligente"}
                 </button>
-                <button className="secondary-button">
+                <button className="secondary-button" onClick={openRecommendations}>
                   Explorar recomendaciones
                   <ChevronRight size={16} />
                 </button>
@@ -290,7 +309,10 @@ export default function App() {
             />
           </section>
 
-          <section className="grid gap-4 xl:grid-cols-[1.55fr_0.85fr]">
+          <section
+            id="consumo"
+            className="grid gap-4 xl:grid-cols-[1.55fr_0.85fr] dashboard-anchor"
+          >
             <article className="glass-panel min-w-0">
               <div className="panel-heading">
                 <div>
@@ -344,7 +366,7 @@ export default function App() {
               </div>
             </article>
 
-            <article className="glass-panel">
+            <article id="nilm" className="glass-panel dashboard-anchor">
               <div className="panel-heading">
                 <div>
                   <p className="eyebrow">NILM · SGN</p>
@@ -416,7 +438,7 @@ export default function App() {
               </div>
             </article>
 
-            <article className="glass-panel min-w-0">
+            <article id="prediccion" className="glass-panel min-w-0 dashboard-anchor">
               <div className="panel-heading">
                 <div>
                   <p className="eyebrow">Proyección financiera</p>
@@ -450,7 +472,10 @@ export default function App() {
           </section>
 
           {assistantOpen && (
-            <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+            <section
+              id="recomendaciones"
+              className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr] dashboard-anchor"
+            >
               <article className="glass-panel">
                 <div className="panel-heading">
                   <div className="flex items-center gap-3">
