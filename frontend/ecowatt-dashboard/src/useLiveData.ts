@@ -6,6 +6,7 @@ const WS_URL = "ws://127.0.0.1:8000/ws/mediciones/";
 export type MeasurementPoint = {
   time: string;
   activePowerW: number;
+  baselineW: number;
   energyKwh: number;
   costSoles: number;
 };
@@ -14,6 +15,8 @@ export type ApplianceDetection = {
   appliance: string;
   confidence: number;
   activePowerW: number;
+  voltage: number;
+  powerFactor: number;
 };
 
 export type MonthlyPrediction = {
@@ -22,9 +25,19 @@ export type MonthlyPrediction = {
   tariffSolesKwh: number;
 };
 
-type RawMedicion = {
+type RawMedicionHistorial = {
+  timestamp: string;
+  potencia_activa: number;
+  voltaje_rms: number;
+  factor_potencia: number;
+  kwh_acumulado: number;
+};
+
+type RawMedicionWs = {
   timestamp: string;
   P: number;
+  V: number;
+  fp: number;
   kWh: number;
 };
 
@@ -39,6 +52,8 @@ export function useLiveData() {
     appliance: "Esperando datos...",
     confidence: 0,
     activePowerW: 0,
+    voltage: 0,
+    powerFactor: 0,
   });
   const [monthlyPrediction, setMonthlyPrediction] = useState<MonthlyPrediction>({
     projectedKwh: 0,
@@ -48,6 +63,14 @@ export function useLiveData() {
   const [powerHistory, setPowerHistory] = useState<MeasurementPoint[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
   const tariffRef = useRef(0.6);
+  const baselineSumRef = useRef(0);
+  const baselineCountRef = useRef(0);
+
+  function nextBaselineW(activePowerW: number): number {
+    baselineSumRef.current += activePowerW;
+    baselineCountRef.current += 1;
+    return baselineSumRef.current / baselineCountRef.current;
+  }
 
   // Carga inicial: historial, NILM y prediccion de costo desde la API REST
   useEffect(() => {
@@ -55,17 +78,27 @@ export function useLiveData() {
       try {
         const histRes = await fetch(`${API_BASE}/mediciones/historial/?limite=60`);
         if (histRes.ok) {
-          const data: RawMedicion[] = await histRes.json();
+          const data: RawMedicionHistorial[] = await histRes.json();
           const points = data
             .slice()
             .reverse()
             .map((m) => ({
               time: formatTime(m.timestamp),
-              activePowerW: m.P,
-              energyKwh: m.kWh,
-              costSoles: Number((m.kWh * tariffRef.current).toFixed(2)),
+              activePowerW: m.potencia_activa,
+              baselineW: nextBaselineW(m.potencia_activa),
+              energyKwh: m.kwh_acumulado,
+              costSoles: Number((m.kwh_acumulado * tariffRef.current).toFixed(2)),
             }));
           setPowerHistory(points);
+
+          const last = data[0];
+          if (last) {
+            setLatestDetection((prev) => ({
+              ...prev,
+              voltage: last.voltaje_rms,
+              powerFactor: last.factor_potencia,
+            }));
+          }
         }
       } catch (err) {
         console.warn("No se pudo cargar historial", err);
@@ -119,10 +152,11 @@ export function useLiveData() {
 
       ws.onmessage = (event) => {
         try {
-          const data = JSON.parse(event.data);
+          const data: RawMedicionWs = JSON.parse(event.data);
           const point: MeasurementPoint = {
             time: formatTime(data.timestamp),
             activePowerW: data.P,
+            baselineW: nextBaselineW(data.P),
             energyKwh: data.kWh,
             costSoles: Number((data.kWh * tariffRef.current).toFixed(2)),
           };
@@ -135,6 +169,8 @@ export function useLiveData() {
           setLatestDetection((prev) => ({
             ...prev,
             activePowerW: data.P,
+            voltage: data.V,
+            powerFactor: data.fp,
           }));
         } catch (err) {
           console.warn("Mensaje WS invalido", err);

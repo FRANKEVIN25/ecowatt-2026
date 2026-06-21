@@ -38,12 +38,12 @@ import {
 } from "recharts";
 import {
   applianceUsage,
-  latestDetection,
   modelMetrics,
-  monthlyPrediction,
-  powerHistory,
+  monthlyPrediction as mockMonthlyPrediction,
   recommendations,
 } from "./mock-data";
+import ChatFloating from "./ChatFloating";
+import { useLiveData } from "./useLiveData";
 
 const navItems = [
   { id: "resumen", label: "Resumen", icon: Home },
@@ -113,11 +113,23 @@ function CustomTooltip({
   );
 }
 
+const ESTIMATED_SAVING_PERCENT = mockMonthlyPrediction.savingPercent;
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [period, setPeriod] = useState<"Hoy" | "Semana" | "Mes">("Hoy");
   const [assistantOpen, setAssistantOpen] = useState(true);
   const [activeSection, setActiveSection] = useState("resumen");
+
+  const { connected, latestDetection, monthlyPrediction: liveMonthlyPrediction, powerHistory } =
+    useLiveData();
+
+  const monthlyPrediction = {
+    ...liveMonthlyPrediction,
+    optimizedCostSoles:
+      liveMonthlyPrediction.projectedCostSoles * (1 - ESTIMATED_SAVING_PERCENT / 100),
+    savingPercent: ESTIMATED_SAVING_PERCENT,
+  };
 
   const totalAppliancePower = useMemo(
     () => applianceUsage.reduce((total, item) => total + item.powerW, 0),
@@ -126,6 +138,7 @@ export default function App() {
   const saving = (
     monthlyPrediction.projectedCostSoles - monthlyPrediction.optimizedCostSoles
   ).toFixed(2);
+  const hasHistory = powerHistory.length > 0;
 
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({
@@ -227,9 +240,9 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Pill>
+            <Pill tone={connected ? "green" : "amber"}>
               <Wifi size={12} />
-              Simulación activa
+              {connected ? "Datos en vivo" : "Conectando al backend..."}
             </Pill>
             <button className="icon-button" aria-label="Notificaciones">
               <Bell size={18} />
@@ -289,7 +302,7 @@ export default function App() {
             <MetricCard
               label="Proyección mensual"
               value={`S/ ${monthlyPrediction.projectedCostSoles.toFixed(2)}`}
-              detail={`${monthlyPrediction.projectedKwh} kWh estimados`}
+              detail={`${monthlyPrediction.projectedKwh.toFixed(1)} kWh estimados`}
               icon={WalletCards}
               tone="blue"
             />
@@ -332,37 +345,43 @@ export default function App() {
                 </div>
               </div>
               <div className="h-80 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={powerHistory} margin={{ top: 12, right: 4, left: -18, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="powerArea" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#20d6a2" stopOpacity={0.42} />
-                        <stop offset="100%" stopColor="#20d6a2" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid stroke="#21354a" strokeDasharray="4 5" vertical={false} />
-                    <XAxis dataKey="time" stroke="#73869a" tickLine={false} axisLine={false} fontSize={11} />
-                    <YAxis stroke="#73869a" tickLine={false} axisLine={false} fontSize={11} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Area
-                      type="monotone"
-                      dataKey="activePowerW"
-                      name="Consumo W"
-                      stroke="#20d6a2"
-                      strokeWidth={2.5}
-                      fill="url(#powerArea)"
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="baselineW"
-                      name="Base W"
-                      stroke="#62a8ff"
-                      strokeDasharray="5 5"
-                      strokeWidth={1.5}
-                      dot={false}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                {hasHistory ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={powerHistory} margin={{ top: 12, right: 4, left: -18, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="powerArea" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#20d6a2" stopOpacity={0.42} />
+                          <stop offset="100%" stopColor="#20d6a2" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid stroke="#21354a" strokeDasharray="4 5" vertical={false} />
+                      <XAxis dataKey="time" stroke="#73869a" tickLine={false} axisLine={false} fontSize={11} />
+                      <YAxis stroke="#73869a" tickLine={false} axisLine={false} fontSize={11} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Area
+                        type="monotone"
+                        dataKey="activePowerW"
+                        name="Consumo W"
+                        stroke="#20d6a2"
+                        strokeWidth={2.5}
+                        fill="url(#powerArea)"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="baselineW"
+                        name="Base W"
+                        stroke="#62a8ff"
+                        strokeDasharray="5 5"
+                        strokeWidth={1.5}
+                        dot={false}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex h-full items-center justify-center text-sm text-slate-500">
+                    Esperando mediciones del sensor...
+                  </div>
+                )}
               </div>
             </article>
 
@@ -394,11 +413,11 @@ export default function App() {
               <div className="mt-5 grid grid-cols-2 gap-2">
                 <div className="mini-stat">
                   <span>Voltaje</span>
-                  <strong>{latestDetection.voltage} V</strong>
+                  <strong>{latestDetection.voltage.toFixed(1)} V</strong>
                 </div>
                 <div className="mini-stat">
                   <span>Factor P.</span>
-                  <strong>{latestDetection.powerFactor}</strong>
+                  <strong>{latestDetection.powerFactor.toFixed(2)}</strong>
                 </div>
               </div>
             </article>
@@ -447,25 +466,31 @@ export default function App() {
                 <CircleDollarSign className="text-amber-300" size={21} />
               </div>
               <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={powerHistory} margin={{ left: -28, right: 0 }}>
-                    <CartesianGrid stroke="#21354a" strokeDasharray="4 5" vertical={false} />
-                    <XAxis dataKey="time" stroke="#73869a" tickLine={false} axisLine={false} fontSize={10} />
-                    <YAxis stroke="#73869a" tickLine={false} axisLine={false} fontSize={10} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="costSoles" name="Costo S/" fill="#f9c74f" radius={[5, 5, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                {hasHistory ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={powerHistory} margin={{ left: -28, right: 0 }}>
+                      <CartesianGrid stroke="#21354a" strokeDasharray="4 5" vertical={false} />
+                      <XAxis dataKey="time" stroke="#73869a" tickLine={false} axisLine={false} fontSize={10} />
+                      <YAxis stroke="#73869a" tickLine={false} axisLine={false} fontSize={10} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar dataKey="costSoles" name="Costo S/" fill="#f9c74f" radius={[5, 5, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex h-full items-center justify-center text-sm text-slate-500">
+                    Esperando mediciones del sensor...
+                  </div>
+                )}
               </div>
               <div className="cost-summary">
                 <div>
                   <span>Proyección actual</span>
-                  <strong>S/ {monthlyPrediction.projectedCostSoles}</strong>
+                  <strong>S/ {monthlyPrediction.projectedCostSoles.toFixed(2)}</strong>
                 </div>
                 <ChevronRight size={18} className="text-slate-600" />
                 <div>
                   <span>Con optimización</span>
-                  <strong className="text-emerald-300">S/ {monthlyPrediction.optimizedCostSoles}</strong>
+                  <strong className="text-emerald-300">S/ {monthlyPrediction.optimizedCostSoles.toFixed(2)}</strong>
                 </div>
               </div>
             </article>
@@ -541,6 +566,8 @@ export default function App() {
           </footer>
         </div>
       </section>
+
+      <ChatFloating />
     </main>
   );
 }
