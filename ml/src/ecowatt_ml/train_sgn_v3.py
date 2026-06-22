@@ -33,6 +33,10 @@ from .refit import (
     uniformly_limit_centers,
     valid_window_centers,
 )
+from .refit_metadata import (
+    APPLIANCE_DISPLAY_NAMES_ES,
+    REFIT_HOUSE8_METADATA_SOURCE,
+)
 
 
 DEFAULT_TRAIN_HOUSES = (2, 4, 5, 6, 9, 13, 17, 19, 20)
@@ -433,6 +437,11 @@ def train(
             "sgn_paper_url": "https://arxiv.org/abs/1811.06692",
         },
         "appliances": list(appliances),
+        "appliance_display_names_es": {
+            appliance: APPLIANCE_DISPLAY_NAMES_ES[appliance]
+            for appliance in appliances
+        },
+        "appliance_metadata_source": REFIT_HOUSE8_METADATA_SOURCE,
         "train_houses": list(train_houses),
         "validation_house": validation_house,
         "test_house": test_house,
@@ -470,6 +479,10 @@ def train(
             "version": "sgn_v3",
             "state_dict": model.state_dict(),
             "appliances": list(appliances),
+            "appliance_display_names_es": {
+                appliance: APPLIANCE_DISPLAY_NAMES_ES[appliance]
+                for appliance in appliances
+            },
             "input_channels": 3,
             "window_size": window_size,
             "thresholds_w": thresholds_w,

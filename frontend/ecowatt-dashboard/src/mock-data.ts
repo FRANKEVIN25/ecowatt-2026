@@ -32,9 +32,7 @@ export const monthlyPrediction = {
 
 export const modelMetrics = {
   realF1: 0.347,
-  simulatedF1: 0.818,
-  simulatedAccuracy: 0.845,
-  balancedAccuracy: 0.82,
+  balancedAccuracy: 0.762,
   leakage: 0,
 };
 

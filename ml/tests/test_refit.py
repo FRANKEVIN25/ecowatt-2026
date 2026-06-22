@@ -11,9 +11,33 @@ from ecowatt_ml.refit import (
     build_input_features,
     extract_windows,
 )
+from ecowatt_ml.refit_metadata import (
+    APPLIANCE_DISPLAY_NAMES_ES,
+    REFIT_HOUSE8_APPLIANCES,
+)
 
 
 class RefitPipelineTests(unittest.TestCase):
+    def test_house8_has_complete_official_metadata(self) -> None:
+        self.assertEqual(
+            REFIT_HOUSE8_APPLIANCES,
+            {
+                "Appliance1": "fridge",
+                "Appliance2": "freezer",
+                "Appliance3": "washer_dryer",
+                "Appliance4": "washing_machine",
+                "Appliance5": "toaster",
+                "Appliance6": "computer",
+                "Appliance7": "television",
+                "Appliance8": "microwave",
+                "Appliance9": "kettle",
+            },
+        )
+        self.assertEqual(
+            APPLIANCE_DISPLAY_NAMES_ES["washing_machine"],
+            "Lavadora",
+        )
+
     def test_house8_uses_real_appliance_channels(self) -> None:
         self.assertEqual(
             REFIT_CHANNELS[8],

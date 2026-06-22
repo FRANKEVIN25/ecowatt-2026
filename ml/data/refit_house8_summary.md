@@ -11,7 +11,22 @@ The file matches REFIT Cleaned format:
 - Time range: 2013-11-01 22:13:18 to 2015-05-10 23:36:10.
 - Sampling: around 8 seconds, consistent with REFIT Cleaned documentation.
 
-The generated file `refit_house8_training.csv` is a 50,000-row converted sample in EcoWatt format, sampled every 120 valid source rows so it spans from 2013-11-01 to 2015-05-03. Because the local REFIT folder does not include appliance metadata names, labels are currently generic: `appliance_1` to `appliance_9`.
+The generated file `refit_house8_training.csv` is a 50,000-row converted sample in EcoWatt format, sampled every 120 valid source rows so it spans from 2013-11-01 to 2015-05-03.
+
+Official House 8 metadata is now applied in the conversion and prediction
+pipeline:
+
+- `Appliance1`: fridge
+- `Appliance2`: freezer
+- `Appliance3`: washer dryer
+- `Appliance4`: washing machine
+- `Appliance5`: toaster
+- `Appliance6`: computer
+- `Appliance7`: television
+- `Appliance8`: microwave
+- `Appliance9`: kettle
+
+Source: NILMTK REFIT `building8.yaml`, derived from the REFIT dataset metadata.
 
 Real REFIT training test:
 
@@ -50,3 +65,12 @@ windows and has zero overlap with training or threshold calibration.
 This is a substantial and leakage-free improvement over `sgn_v2`, but it is
 not presented as production-grade disaggregation. Accuracy is high because
 off-state samples dominate; F1 remains the primary acceptance metric.
+
+## Metadata verification retraining
+
+The personalized SGN v3 model was retrained after making the official House 8
+metadata explicit in the pipeline and exported checkpoint. The result remained
+deterministically unchanged at Macro-F1 `0.3475`, which is expected: SGN v3 was
+already trained against the correct physical channels for washing machine,
+microwave, and kettle. The metadata correction fixes naming and traceability;
+it does not relabel or rebalance those three existing target signals.

@@ -7,20 +7,11 @@ import numpy as np
 import pandas as pd
 
 from .data import save_measurements
+from .refit_metadata import REFIT_HOUSE8_APPLIANCES
 
 
 APPLIANCE_COLUMNS = [f"Appliance{i}" for i in range(1, 10)]
-DEFAULT_APPLIANCE_NAMES = {
-    "Appliance1": "appliance_1",
-    "Appliance2": "appliance_2",
-    "Appliance3": "appliance_3",
-    "Appliance4": "appliance_4",
-    "Appliance5": "appliance_5",
-    "Appliance6": "appliance_6",
-    "Appliance7": "appliance_7",
-    "Appliance8": "appliance_8",
-    "Appliance9": "appliance_9",
-}
+DEFAULT_APPLIANCE_NAMES = REFIT_HOUSE8_APPLIANCES
 
 
 def convert_refit_house(
