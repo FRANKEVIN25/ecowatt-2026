@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-const API_BASE = "http://127.0.0.1:8000/api";
-const WS_URL = "ws://127.0.0.1:8000/ws/mediciones/";
+const BACKEND_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000";
+const API_BASE = `${BACKEND_BASE}/api`;
+const WS_URL = `${BACKEND_BASE.replace(/^http/, "ws")}/ws/mediciones/`;
 
 export type MeasurementPoint = {
   time: string;

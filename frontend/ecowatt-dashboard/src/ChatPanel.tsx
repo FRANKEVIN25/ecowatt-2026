@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Bot, Loader2, Send, Sparkles } from "lucide-react";
 
-const API_BASE = "http://127.0.0.1:8000/api";
+const API_BASE = `${import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000"}/api`;
 
 type ChatMessage = {
   role: "user" | "assistant";
