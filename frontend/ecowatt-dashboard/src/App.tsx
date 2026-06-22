@@ -37,7 +37,6 @@ import {
   YAxis,
 } from "recharts";
 import {
-  applianceUsage,
   modelMetrics,
   monthlyPrediction as mockMonthlyPrediction,
   recommendations,
@@ -131,9 +130,24 @@ export default function App() {
     savingPercent: ESTIMATED_SAVING_PERCENT,
   };
 
-  const totalAppliancePower = useMemo(
-    () => applianceUsage.reduce((total, item) => total + item.powerW, 0),
-    [],
+  const applianceUsage = useMemo(() => {
+    const colors = ["#20d6a2", "#62a8ff", "#f9c74f", "#b388ff"];
+    const totalPower = latestDetection.appliances.reduce(
+      (total, item) => total + item.predictedPowerW,
+      0,
+    );
+    return latestDetection.appliances.map((item, index) => ({
+      name: item.displayName,
+      powerW: item.predictedPowerW,
+      share: totalPower > 0 ? (item.predictedPowerW / totalPower) * 100 : 0,
+      state: item.isOn ? "Activo" : "Apagado",
+      confidence: item.confidence,
+      color: colors[index % colors.length],
+    }));
+  }, [latestDetection.appliances]);
+  const totalAppliancePower = applianceUsage.reduce(
+    (total, item) => total + item.powerW,
+    0,
   );
   const saving = (
     monthlyPrediction.projectedCostSoles - monthlyPrediction.optimizedCostSoles
@@ -201,15 +215,15 @@ export default function App() {
         <div className="mx-4 mt-auto mb-5 rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.06] p-4">
           <div className="flex items-center gap-2 text-emerald-200">
             <ShieldCheck size={17} />
-            <p className="text-xs font-semibold">Modo demo verificable</p>
+            <p className="text-xs font-semibold">Sistema oficial en operación</p>
           </div>
           <p className="mt-2 text-[11px] leading-relaxed text-slate-400">
-            Simulación separada de REFIT. Cero sesiones compartidas entre
-            entrenamiento y prueba.
+            Telemetría del sensor, inferencia SGN v3 y predicción conectadas al
+            backend desplegado.
           </p>
           <div className="mt-3 flex items-center gap-2 text-[10px] text-slate-500">
             <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-            Pipeline disponible
+            Pipeline en producción
           </div>
         </div>
       </aside>
@@ -406,8 +420,8 @@ export default function App() {
                   {latestDetection.appliance}
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
-                  {latestDetection.activePowerW.toLocaleString("es-PE")} W · alta
-                  confianza
+                  {latestDetection.predictedPowerW.toLocaleString("es-PE")} W ·{" "}
+                  {Math.round(latestDetection.confidence * 100)}% de confianza
                 </p>
               </div>
               <div className="mt-5 grid grid-cols-2 gap-2">
@@ -433,7 +447,7 @@ export default function App() {
                 <Pill tone="slate">{totalAppliancePower.toFixed(0)} W ahora</Pill>
               </div>
               <div className="space-y-3">
-                {applianceUsage.map((item) => (
+                {applianceUsage.length > 0 ? applianceUsage.map((item) => (
                   <div key={item.name} className="appliance-row">
                     <span
                       className="appliance-dot"
@@ -453,7 +467,11 @@ export default function App() {
                     </div>
                     <span className={`device-state device-${item.state.toLowerCase()}`}>{item.state}</span>
                   </div>
-                ))}
+                )) : (
+                  <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4 text-sm text-slate-500">
+                    Esperando la primera inferencia SGN v3 del backend...
+                  </div>
+                )}
               </div>
             </article>
 
@@ -537,24 +555,25 @@ export default function App() {
                 </div>
                 <div className="space-y-3">
                   <div className="model-metric">
-                    <span>Benchmark sintético F1</span>
-                    <strong>{modelMetrics.simulatedF1.toFixed(3)}</strong>
-                    <div style={{ width: `${modelMetrics.simulatedF1 * 100}%` }} />
-                  </div>
-                  <div className="model-metric">
-                    <span>Accuracy sintético</span>
-                    <strong>{modelMetrics.simulatedAccuracy.toFixed(3)}</strong>
-                    <div style={{ width: `${modelMetrics.simulatedAccuracy * 100}%` }} />
-                  </div>
-                  <div className="model-metric model-metric-muted">
-                    <span>F1 REFIT real</span>
+                    <span>Macro-F1 REFIT House 8</span>
                     <strong>{modelMetrics.realF1.toFixed(3)}</strong>
                     <div style={{ width: `${modelMetrics.realF1 * 100}%` }} />
                   </div>
+                  <div className="model-metric">
+                    <span>Balanced accuracy REFIT</span>
+                    <strong>{modelMetrics.balancedAccuracy.toFixed(3)}</strong>
+                    <div style={{ width: `${modelMetrics.balancedAccuracy * 100}%` }} />
+                  </div>
+                  <div className="model-metric model-metric-muted">
+                    <span>Solapamiento entre splits</span>
+                    <strong>{modelMetrics.leakage}</strong>
+                    <div style={{ width: `${modelMetrics.leakage}%` }} />
+                  </div>
                 </div>
                 <div className="mt-4 rounded-xl border border-cyan-300/10 bg-cyan-300/[0.05] p-3 text-[11px] leading-relaxed text-slate-400">
-                  El benchmark de demo no reemplaza la validación REFIT. Las
-                  sesiones de prueba tienen <strong className="text-cyan-200">0 solapamiento</strong>.
+                  Métricas del modelo SGN v3 personalizado con separación
+                  cronológica 60/20/20 y{" "}
+                  <strong className="text-cyan-200">0 solapamiento</strong>.
                 </div>
               </article>
             </section>
@@ -562,7 +581,7 @@ export default function App() {
 
           <footer className="flex flex-col gap-2 border-t border-white/5 py-5 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
             <span>EcoWatt 2026 · Inteligencia energética residencial</span>
-            <span>Tarifa: S/ {monthlyPrediction.tariffSolesKwh.toFixed(2)} / kWh · Datos demo identificados</span>
+            <span>Tarifa: S/ {monthlyPrediction.tariffSolesKwh.toFixed(2)} / kWh · Telemetría real en vivo</span>
           </footer>
         </div>
       </section>

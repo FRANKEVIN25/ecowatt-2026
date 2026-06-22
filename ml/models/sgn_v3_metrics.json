@@ -18,6 +18,12 @@
     "microwave",
     "kettle"
   ],
+  "appliance_display_names_es": {
+    "washing_machine": "Lavadora",
+    "microwave": "Microondas",
+    "kettle": "Hervidor"
+  },
+  "appliance_metadata_source": "NILMTK REFIT metadata: nilmtk/dataset_converters/refit/metadata/building8.yaml",
   "epochs_max": 20,
   "epochs_trained": {
     "washing_machine": 20,

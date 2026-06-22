@@ -12,6 +12,7 @@ from .config import FEATURE_COLUMNS, WindowConfig
 from .data import load_measurements
 from .models import SGNClassifier, SGNDisaggregator
 from .refit import build_input_features
+from .refit_metadata import appliance_display_name
 
 
 def _load_sgn(model_path: str | Path) -> tuple[SGNClassifier, dict, dict]:
@@ -73,6 +74,7 @@ def _predict_sgn_v3(
             )
             prediction = {
                 "appliance": appliance,
+                "display_name": appliance_display_name(appliance),
                 "confidence": round(probability, 4),
                 "predicted_power_w": round(predicted_power, 2),
                 "is_on": is_on,
@@ -94,7 +96,8 @@ def _predict_sgn_v3(
         else round(1.0 - float(primary["confidence"]), 4)
     )
     return {
-        "detected_appliance": detected_appliance,
+        "detected_appliance": appliance_display_name(detected_appliance),
+        "detected_appliance_key": detected_appliance,
         "confidence": confidence,
         "predicted_power_w": primary["predicted_power_w"],
         "active_appliances": active,

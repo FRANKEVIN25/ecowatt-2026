@@ -14,10 +14,21 @@ export type MeasurementPoint = {
 
 export type ApplianceDetection = {
   appliance: string;
+  applianceKey: string;
   confidence: number;
   activePowerW: number;
+  predictedPowerW: number;
   voltage: number;
   powerFactor: number;
+  appliances: AppliancePrediction[];
+};
+
+export type AppliancePrediction = {
+  appliance: string;
+  displayName: string;
+  confidence: number;
+  predictedPowerW: number;
+  isOn: boolean;
 };
 
 export type MonthlyPrediction = {
@@ -51,10 +62,13 @@ export function useLiveData() {
   const [connected, setConnected] = useState(false);
   const [latestDetection, setLatestDetection] = useState<ApplianceDetection>({
     appliance: "Esperando datos...",
+    applianceKey: "standby",
     confidence: 0,
     activePowerW: 0,
+    predictedPowerW: 0,
     voltage: 0,
     powerFactor: 0,
+    appliances: [],
   });
   const [monthlyPrediction, setMonthlyPrediction] = useState<MonthlyPrediction>({
     projectedKwh: 0,
@@ -98,6 +112,7 @@ export function useLiveData() {
               ...prev,
               voltage: last.voltaje_rms,
               powerFactor: last.factor_potencia,
+              activePowerW: last.potencia_activa,
             }));
           }
         }
@@ -112,7 +127,24 @@ export function useLiveData() {
           setLatestDetection((prev) => ({
             ...prev,
             appliance: data.detected_appliance,
+            applianceKey: data.detected_appliance_key,
             confidence: data.confidence,
+            predictedPowerW: data.predicted_power_w ?? prev.predictedPowerW,
+            appliances: (data.appliance_predictions ?? []).map(
+              (item: {
+                appliance: string;
+                display_name: string;
+                confidence: number;
+                predicted_power_w: number;
+                is_on: boolean;
+              }) => ({
+                appliance: item.appliance,
+                displayName: item.display_name,
+                confidence: item.confidence,
+                predictedPowerW: item.predicted_power_w,
+                isOn: item.is_on,
+              }),
+            ),
           }));
         }
       } catch (err) {
@@ -193,7 +225,24 @@ export function useLiveData() {
           setLatestDetection((prev) => ({
             ...prev,
             appliance: data.detected_appliance,
+            applianceKey: data.detected_appliance_key,
             confidence: data.confidence,
+            predictedPowerW: data.predicted_power_w ?? prev.predictedPowerW,
+            appliances: (data.appliance_predictions ?? []).map(
+              (item: {
+                appliance: string;
+                display_name: string;
+                confidence: number;
+                predicted_power_w: number;
+                is_on: boolean;
+              }) => ({
+                appliance: item.appliance,
+                displayName: item.display_name,
+                confidence: item.confidence,
+                predictedPowerW: item.predicted_power_w,
+                isOn: item.is_on,
+              }),
+            ),
           }));
         }
       } catch {

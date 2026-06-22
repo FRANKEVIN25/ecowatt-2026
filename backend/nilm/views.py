@@ -17,7 +17,7 @@ ML_MODELS_PATH = Path(__file__).resolve().parent.parent.parent / "ml" / "models"
 class NilmLatestView(APIView):
     def get(self, request):
         try:
-            from ecowatt_ml.predict import predict_appliance_from_features
+            from ecowatt_ml.predict import predict_appliance_from_window
 
             ultima_medicion = Medicion.objects.first()
             if not ultima_medicion:
@@ -26,21 +26,33 @@ class NilmLatestView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
 
+            sgn_model_path = ML_MODELS_PATH / "sgn_v3.pt"
+            mediciones = list(Medicion.objects.all()[:127])
+            if len(mediciones) < 127:
+                return Response(
+                    {
+                        "mensaje": (
+                            "Se requieren 127 mediciones reales para ejecutar "
+                            "la ventana SGN v3."
+                        ),
+                        "mediciones_disponibles": len(mediciones),
+                    },
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+
             features = [
-                ultima_medicion.voltaje_rms,
-                ultima_medicion.corriente_rms,
-                ultima_medicion.angulo_fase,
-                ultima_medicion.potencia_activa,
-                ultima_medicion.potencia_reactiva,
-                ultima_medicion.potencia_aparente,
-                ultima_medicion.factor_potencia,
+                [
+                    medicion.voltaje_rms,
+                    medicion.corriente_rms,
+                    medicion.angulo_fase,
+                    medicion.potencia_activa,
+                    medicion.potencia_reactiva,
+                    medicion.potencia_aparente,
+                    medicion.factor_potencia,
+                ]
+                for medicion in reversed(mediciones)
             ]
-
-            sgn_model_path = ML_MODELS_PATH / "sgn_v2.pt"
-            if not sgn_model_path.exists():
-                sgn_model_path = ML_MODELS_PATH / "sgn_v1.pt"
-
-            resultado = predict_appliance_from_features(features, sgn_model_path)
+            resultado = predict_appliance_from_window(features, sgn_model_path)
 
             artefacto = ArtefactoDetectado.objects.create(
                 medicion=ultima_medicion,
@@ -51,7 +63,13 @@ class NilmLatestView(APIView):
             return Response({
                 "timestamp": ultima_medicion.timestamp.isoformat(),
                 "detected_appliance": resultado["detected_appliance"],
+                "detected_appliance_key": resultado["detected_appliance_key"],
                 "confidence": resultado["confidence"],
+                "predicted_power_w": resultado["predicted_power_w"],
+                "active_appliances": resultado["active_appliances"],
+                "appliance_predictions": resultado["appliance_predictions"],
+                "model_version": "sgn_v3",
+                "data_source": "mediciones_reales",
             })
 
         except Exception as e:
@@ -176,4 +194,4 @@ Responde en español, de forma breve (maximo 3 oraciones), clara y orientada a d
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            ) 
+            )
